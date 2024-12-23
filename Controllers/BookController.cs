@@ -1,11 +1,12 @@
 ﻿using Spectre.Console;
 using TCSA.OOP.LibraryManagementSystem.Models;
-namespace TCSA.OOP.LibraryManagementSystem;
 
-internal class BooksController
+namespace TCSA.OOP.LibraryManagementSystem.Controllers;
+
+internal class BookController : BaseController, IBaseController
 {
 
-    internal void ViewBooks()
+    public void ViewItems()
     {
         var table = new Table();
         table.Border(TableBorder.Rounded);
@@ -36,7 +37,7 @@ internal class BooksController
         Console.ReadKey();
     }
 
-    internal void AddBook()
+    public void AddItem()
     {
         var name = AnsiConsole.Ask<string>("Enter the [green]title[/] of the book to add:");
         var author = AnsiConsole.Ask<string>("Enter the [green]author[/] of the book:");
@@ -46,26 +47,26 @@ internal class BooksController
 
         if (MockDatabase.LibraryItems.Exists(b => b.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
         {
-            AnsiConsole.MarkupLine("[red]This book already exists.[/]");
+            DisplayMessage("This book already exists.", "red");
         }
         else
         {
             var newBook = new Book(MockDatabase.LibraryItems.Count + 1, name, author, category, location, pages);
             MockDatabase.LibraryItems.Add(newBook);
-            AnsiConsole.MarkupLine("[green]Book added successfully![/]");
+            DisplayMessage("Book added successfully!", "green");
         }
 
-        AnsiConsole.MarkupLine("Press Any Key to Continue.");
+        DisplayMessage("Press Any Key to Continue.");
         Console.ReadKey();
     }
 
-    internal void DeleteBook()
+    public void DeleteItem()
     {
         var books = MockDatabase.LibraryItems.OfType<Book>().ToList();
 
         if (books.Count == 0)
         {
-            AnsiConsole.MarkupLine("[red]No books available to delete.[/]");
+            DisplayMessage("No books available to delete.", "red");
             Console.ReadKey();
             return;
         }
@@ -75,16 +76,19 @@ internal class BooksController
                 .Title("Select a [red]book[/] to delete:")
                 .AddChoices(books));
 
-        if (MockDatabase.LibraryItems.Remove(bookToDelete))
+        if(ConfirmDeletion(bookToDelete.Name))
         {
-            AnsiConsole.MarkupLine("[red]Book deleted successfully![/]");
-        }
-        else
-        {
-            AnsiConsole.MarkupLine("[red]Book not found.[/]");
+            if (MockDatabase.LibraryItems.Remove(bookToDelete))
+            {
+                DisplayMessage("Book deleted successfully!", "red");
+            }
+            else
+            {
+                DisplayMessage("Book not found.", "red");
+            }
         }
 
-        AnsiConsole.MarkupLine("Press Any Key to Continue.");
+        DisplayMessage("Press Any Key to Continue.", "green");
         Console.ReadKey();
     }
 }

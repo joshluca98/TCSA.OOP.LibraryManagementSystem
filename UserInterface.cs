@@ -1,34 +1,91 @@
 ﻿using Spectre.Console;
+using STUDY.OOP.LibraryManagement.Controllers;
+using TCSA.OOP.LibraryManagementSystem.Controllers;
 using static TCSA.OOP.LibraryManagementSystem.Enums;
 
 namespace TCSA.OOP.LibraryManagementSystem;
 
 internal class UserInterface
 {
-    private BooksController booksController = new BooksController();
-    
+    private readonly BookController bookController = new();
+    private readonly MagazineController magazineController = new();
+    private readonly NewspaperController newspaperController = new();
+
     internal void MainMenu()
     {
         while (true)
         {
             Console.Clear();
-            var choice = AnsiConsole.Prompt(
-                    new SelectionPrompt<MenuOption>()
-                    .Title("What do you want to do next?")
-                    .AddChoices(Enum.GetValues<MenuOption>()));
+            var actionChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<MenuAction>()
+                .Title("What do you want to do next?")
+                .AddChoices(Enum.GetValues<MenuAction>()));
+            
+            var itemTypeChoice = AnsiConsole.Prompt(
+                new SelectionPrompt<ItemType>()
+                .Title("Select the type of item:")
+                .AddChoices(Enum.GetValues<ItemType>()));
 
-            switch (choice)
+            switch (actionChoice)
             {
-                case MenuOption.ViewBooks:
-                    booksController.ViewBooks();
+                case MenuAction.ViewItems:
+                    ViewItems(itemTypeChoice);
                     break;
-                case MenuOption.AddBook:
-                    booksController.AddBook();
+                case MenuAction.AddItem:
+                    AddItem(itemTypeChoice);
                     break;
-                case MenuOption.DeleteBook:
-                    booksController.DeleteBook();
+                case MenuAction.DeleteItem:
+                    DeleteItem(itemTypeChoice);
                     break;
             }
+        }
+    }
+
+    private void ViewItems(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            case ItemType.Book:
+                bookController.ViewItems();
+                break;
+            case ItemType.Magazine:
+                magazineController.ViewItems();
+                break;
+            case ItemType.Newspaper:
+                newspaperController.ViewItems();
+                break;
+        }
+    }
+
+    private void AddItem(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            case ItemType.Book:
+                bookController.AddItem();
+                break;
+            case ItemType.Magazine:
+                magazineController.AddItem();
+                break;
+            case ItemType.Newspaper:
+                newspaperController.AddItem();
+                break;
+        }
+    }
+
+    private void DeleteItem(ItemType itemType)
+    {
+        switch (itemType)
+        {
+            case ItemType.Book:
+                bookController.DeleteItem();
+                break;
+            case ItemType.Magazine:
+                magazineController.DeleteItem();
+                break;
+            case ItemType.Newspaper:
+                newspaperController.DeleteItem();
+                break;
         }
     }
 }
